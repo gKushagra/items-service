@@ -13,5 +13,6 @@ namespace items_service.Models
         public string GenericName { get; set; }
         public string Code { get; set; }
         public string SupplierID { get; set; }
+        // public Supplier Supplier { get; set; }
     }
 }

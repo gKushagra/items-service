@@ -16,7 +16,7 @@ namespace items_service.AddControllers
         private readonly ItemContext _context;
 
         public ItemsController(ItemContext context)
-        { 
+        {
             _context = context;
 
             _context.Database.EnsureCreated();
@@ -27,57 +27,72 @@ namespace items_service.AddControllers
         {
             IQueryable<Item> items = _context.Items;
 
-            return Ok(await items.ToArrayAsync()); 
+            return Ok(
+            await items.Join(
+                _context.Suppliers,
+                i => i.SupplierID,
+                s => s.ID,
+                (i, s) => new
+                {
+                    ID = i.ID,
+                    Quantity = i.Quantity,
+                    Expiry = i.Expiry,
+                    DateAdded = i.DateAdded,
+                    BrandName = i.BrandName,
+                    GenericName = i.GenericName,
+                    Code = i.Code,
+                    Supplier = s
+                }
+            ).ToListAsync()
+            );
         }
 
-        // [HttpGet("{id}")]
-        // public async Task<IActionResult> GetProduct(int id){
-        //     var product = await _context.Products.FindAsync(id);
-        //     if (product == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     return Ok(product);
-        // }
+        [HttpPost]
+        public async Task<IActionResult> PostProduct([FromBody] List<Item> items)
+        {
+            try
+            {
+                await _context.Items.AddRangeAsync(items);
 
-        // [HttpPost]
-        // public async Task<ActionResult<Product>> PostProduct([FromBody]Product product)
-        // {
-        //     _context.Products.Add(product);
-        //     await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
 
-        //     return CreatedAtAction(
-        //         "GetProduct",
-        //         new { id = product.Id },
-        //         product
-        //     );
-        // }
+                throw;
+            }
 
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutProduct([FromRoute] int id, [FromBody] Product product)
-        // {
-        //     if (id != product.Id) {
-        //         return BadRequest();
-        //     }
+            return Ok();
+        }
 
-        //     _context.Entry(product).State = EntityState.Modified;
+        // Update the Quantity of items, when added/removed from bins
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutProduct([FromRoute] string id, [FromBody] Item item)
+        {
+            if (id != item.ID)
+            {
+                return BadRequest();
+            }
 
-        //     try 
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     } 
-        //     catch (DbUpdateConcurrencyException) 
-        //     {
-        //         if (_context.Products.Find(id) == null) {
-        //             return NotFound();
-        //         }
+            _context.Entry(item).State = EntityState.Modified;
 
-        //         throw;
-        //     }
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (_context.Items.Find(id) == null)
+                {
+                    return NotFound();
+                }
 
-        //     return NoContent();
+                throw;
+            }
 
-        // }
+            return Ok();
+        }
     }
 }
 

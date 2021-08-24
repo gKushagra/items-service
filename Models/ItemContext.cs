@@ -36,7 +36,8 @@ namespace items_service
                 entity.Property(e => e.Expiry).IsRequired();
                 entity.Property(e => e.DateAdded).IsRequired();
                 entity.Property(e => e.GenericName).IsRequired();
-                // entity.HasOne(e => e.Supplier).WithMany(e => e.Items);
+                entity.Property(e => e.SupplierID).IsRequired();
+                // entity.HasOne(e => e.Supplier);
             });
 
             modelBuilder.Entity<Cabinet>(entity =>
@@ -78,7 +79,9 @@ namespace items_service
                 entity.Property(e => e.ID).IsRequired();
                 entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.Date).IsRequired();
-                // entity.HasMany(e => e.Items);
+                entity.Property(e => e.ItemID).IsRequired();
+                entity.Property(e => e.SupplierID).IsRequired();
+                // entity.HasOne(e => e.Item);
                 // entity.HasOne(e => e.Supplier);
             });
 
