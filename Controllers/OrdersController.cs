@@ -35,16 +35,23 @@ namespace items_service.AddControllers
                 s => s.ID,
                 (o, s) => new
                 {
-                    o,
-                    s
+                    ID = o.ID,
+                    Supplier = s,
+                    ItemID = o.ItemID,
+                    Quantity = o.Quantity,
+                    Date = o.Date
                 }
                 ).Join(
                 _context.Items,
-                or => or.o.ItemID,
+                or => or.ItemID,
                 i => i.ID,
                 (or, i) => new
                 {
-                    or
+                    ID = or.ID,
+                    Supplier = or.Supplier,
+                    Item = i,
+                    Quantity = or.Quantity,
+                    Date = or.Date
                 }
                 ).ToListAsync()
             );

@@ -22,7 +22,7 @@ namespace items_service.AddControllers
             _context.Database.EnsureCreated();
         }
 
-        // Get all cabinets
+        // Get all cabinets [Tested]
         [HttpGet]
         public async Task<IActionResult> GetCabinets()
         {
@@ -31,11 +31,11 @@ namespace items_service.AddControllers
             return Ok(await cabinets.ToArrayAsync());
         }
 
-        // Add new cabinet
+        // Add new cabinet [Tested]
         [HttpPost]
         public async Task<IActionResult> AddCabinet([FromBody] Cabinet cabinet)
         {
-            cabinet.ID = new Guid().ToString();
+            // cabinet.ID = new Guid().ToString();
 
             try
             {
@@ -50,7 +50,7 @@ namespace items_service.AddControllers
                 throw;
             }
 
-            return Ok(new { ID = cabinet.ID });
+            return Ok();
         }
 
         // Get bins in cabinet with id
@@ -74,7 +74,7 @@ namespace items_service.AddControllers
         [Route("bin")]
         public async Task<IActionResult> AddBins([FromBody] Bin bin)
         {
-            bin.ID = new Guid().ToString();
+            // bin.ID = new Guid().ToString();
 
             try
             {
@@ -89,7 +89,51 @@ namespace items_service.AddControllers
                 throw;
             }
 
-            return Ok(new { ID = bin.ID });
+            return Ok();
+        }
+
+        // Get bin items in bin with id
+        [HttpGet("bin/{id}")]
+        public async Task<IActionResult> GetBinItems(string id)
+        {
+            IQueryable<BinItem> binItems = _context.BinItems;
+
+            var binItemsList = await binItems
+            // .Join(
+            //     _context.Bins,
+            //     bi => bi.ItemID,
+            //     b => b.ID,
+            //     (bi, b) => new
+            //     {
+            //         ID = bi.ID,
+            //         Bin = b,
+            //         ItemID = bi.ItemID,
+            //         Quantity = bi.Quantity,
+            //         DateAdded = bi.DateAdded
+            //     }
+            // )
+            // .Join(
+            //     _context.Items,
+            //     mbi => mbi.ItemID,
+            //     i => i.ID,
+            //     (mbi, i) => new
+            //     {
+            //         ID = mbi.ID,
+            //         Bin = mbi.Bin,
+            //         Item = i,
+            //         Quantity = mbi.Quantity,
+            //         DateAdded = mbi.DateAdded
+            //     }
+            // )
+            .Where(b => b.BinID == id)
+            .ToListAsync();
+
+            if (binItemsList == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(binItemsList);
         }
 
         // Add items to bin with id
