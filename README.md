@@ -1,6 +1,8 @@
 # Database Model
 
-![ER Diagram](https://github.com/gKushagra/items-service/master/dispensing-system.png?raw=true)
+[ER Diagram](https://github.com/gKushagra/items-service/blob/master/dispensing-system.png)
 
 # Seed Data
-![Link to .sql](https://github.com/gKushagra/items-service/seedData/master/image.jpg?raw=true)
+
+[Items](https://raw.githubusercontent.com/gKushagra/items-service/master/seedData/Item.sql)
+[Suppliers](https://raw.githubusercontent.com/gKushagra/items-service/master/seedData/supplier.sql)
